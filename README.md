@@ -1,9 +1,19 @@
 # Titan Viewer downloads
 
-[Official downloads and release notes](https://github.com/Treasur34/TitanViewer/releases) · [Website](https://titanviewer.com/) · [Help](https://titanviewer.com/help/)
+[**Download Titan Viewer for Windows**](https://github.com/Treasur34/TitanViewer/releases/download/v0.39.3/TitanViewer-0.39.3-windows-x64.exe)
 
-One Windows EXE offers installation or portable use. Signed update packages are downloaded by the app automatically.
+One EXE. Choose **Install** or **Continue portable** when it opens.
 
-This public repository contains distribution files and release metadata only. Titan Viewer application source code, private signing keys and server configuration are not included. GitHub’s automatic source archives contain only this public metadata.
+[Website](https://titanviewer.com/) · [Help](https://titanviewer.com/help/) · [Release notes and checksums](https://github.com/Treasur34/TitanViewer/releases/tag/v0.39.3)
 
-Use the newest Windows release. The archived Linux 0.38.0 preview is retained for reproducibility and is below the current connection-service minimum version.
+## Automatic updates
+
+Titan Viewer checks the GitHub update channel at startup and verifies each update using its pinned publisher signature. The `.rdupdate` attachment is used by the app; you do not need to download it separately.
+
+This repository contains published binaries, signed update metadata and third-party notices. The Titan Viewer application source code, private signing keys and server configuration are not included. GitHub's automatic source archives contain only the public metadata in this repository.
+
+## Platform availability
+
+The current download is the Windows x64 preview. It supports installed and portable use. The EXE does not yet carry a Windows Authenticode certificate; the automatic update package has a verified publisher signature. License terms apply.
+
+The older Linux X11 archive is retained under v0.38.0 for reproducibility and is below the current connection-service minimum version. It is not the current supported release. No public macOS or mobile store build is included here.
