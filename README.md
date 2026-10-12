@@ -1,10 +1,14 @@
 # Titan Viewer downloads
 
-[**Download Titan Viewer for Windows**](https://github.com/Treasur34/TitanViewer/releases/download/v0.39.3/TitanViewer-0.39.3-windows-x64.exe)
+[**Download Titan Viewer for Windows**](https://github.com/Treasur34/TitanViewer/releases/download/v0.39.4/TitanViewer-0.39.4-windows-x64.exe)
 
 One EXE. Choose **Install** or **Continue portable** when it opens.
 
-[Website](https://titanviewer.com/) · [Help](https://titanviewer.com/help/) · [Release notes and checksums](https://github.com/Treasur34/TitanViewer/releases/tag/v0.39.3)
+[Website](https://titanviewer.com/) · [Help](https://titanviewer.com/help/) · [Release notes and checksums](https://github.com/Treasur34/TitanViewer/releases/tag/v0.39.4)
+
+## Languages
+
+Arabic, English, Turkish, German, Spanish, French, Italian, Portuguese, Russian, Japanese and Chinese. Arabic includes right-to-left layouts.
 
 ## Automatic updates
 
