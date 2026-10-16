@@ -258,7 +258,7 @@ def plan(releases, current, directory, *, loader=download, public=PUBLIC_KEY, no
 
 
 def api(path, *, data=None, method=None):
-    if not path.startswith("/") or ".." in path or "?" in path.split("/", 2)[1]:
+    if not re.fullmatch(r"/[A-Za-z0-9_/-]+(?:\?[A-Za-z0-9_=&]+)?", path):
         raise ValueError("Invalid API path")
     headers = {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
     token = os.environ.get("GITHUB_TOKEN")

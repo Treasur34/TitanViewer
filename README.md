@@ -1,27 +1,31 @@
 # Titan Viewer downloads
 
-[**Download Titan Viewer for Windows**](https://github.com/Treasur34/TitanViewer/releases/download/v0.39.5/TitanViewer-0.39.5-windows-x64.exe)
+[Download Titan Viewer](https://titanviewer.com/download/) · [All releases](https://github.com/Treasur34/TitanViewer/releases) · [Help](https://titanviewer.com/help/)
 
-One EXE. Choose **Install** or **Continue portable** when it opens.
+The download page chooses the newest published package for your operating system. Binary files are delivered by GitHub Releases.
 
-[Website](https://titanviewer.com/) · [Help](https://titanviewer.com/help/) · [Release notes and checksums](https://github.com/Treasur34/TitanViewer/releases/tag/v0.39.5)
+## Windows
+
+One EXE. Choose **Install** or **Continue portable** when it opens. The signed `.rdupdate` attachment is used by the application; you do not need to download it separately.
+
+## Linux x64 (X11 preview)
+
+Extract the Linux archive and run `Install.sh` as your normal user, without sudo. This installs into your user account using the signed GitHub channel and adds the application menu entry. Launch the installed app from that entry to receive automatic updates.
+
+Running the extracted `TitanViewer` directly remains portable and does not automatically install it. Packages managed by a Linux distribution must be updated through their package manager.
+
+The 0.39.5 Linux build was tested on Ubuntu 22.04 x64, including an actual installed 0.38.0 to 0.39.5 upgrade. Physical desktop and Wayland qualification remains separate. No public macOS or mobile store build is included here.
+
+## Automatic updates
+
+Installed Linux and Windows clients check at startup and verify each update with their pinned publisher signature before applying it. Active remote sessions defer installation. Offline clients can update after reconnecting.
+
+The **Publish verified update channels** GitHub Action validates signed release metadata and payloads, then publishes the channels automatically. It refuses incomplete, altered, expired or downgraded releases. The private signing key stays off GitHub.
 
 ## Languages
 
 Arabic, English, Turkish, German, Spanish, French, Italian, Portuguese, Russian, Japanese and Chinese. Arabic includes right-to-left layouts.
 
-## Automatic updates
+This repository contains release binaries, signed metadata, notices and the public channel verifier. Application source, private signing keys and server configuration are not included. GitHub's automatic source archives contain only these public distribution files.
 
-Titan Viewer checks the GitHub update channel at startup and verifies each update using its pinned publisher signature. The `.rdupdate` attachment is used by the app; you do not need to download it separately.
-
-This repository contains published binaries, signed update metadata and third-party notices. The Titan Viewer application source code, private signing keys and server configuration are not included. GitHub's automatic source archives contain only the public metadata in this repository.
-
-## Platform availability
-
-The current download is the Windows x64 preview. It supports installed and portable use. The EXE does not yet carry a Windows Authenticode certificate; the automatic update package has a verified publisher signature. License terms apply.
-
-The older Linux X11 archive is retained under v0.38.0 for reproducibility and is below the current connection-service minimum version. It is not the current supported release. No public macOS or mobile store build is included here.
-
-## Clipboard update
-
-Version 0.39.5 fixes text and file copy/paste keyboard shortcuts. Update both computers for the full fix.
+These are preview builds. The Windows EXE does not yet carry an Authenticode certificate; the update channel uses a separate publisher signature. License terms apply.
