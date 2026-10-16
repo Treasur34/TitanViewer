@@ -1,0 +1,33 @@
+name: Publish verified update channels
+on:
+  release:
+    types: [published, edited]
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['publish_channels.py', '.github/workflows/publish-channels.yml']
+  schedule:
+    - cron: '23 * * * *'
+permissions:
+  contents: read
+concurrency:
+  group: signed-update-channels
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'Treasur34/TitanViewer'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Install verifier
+        run: python3 -m pip install --disable-pip-version-check cryptography==46.0.3
+      - name: Verify every payload, then commit channels together
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 publish_channels.py --publish
