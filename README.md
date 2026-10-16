@@ -10,15 +10,15 @@ One EXE. Choose **Install** or **Continue portable** when it opens. The signed `
 
 ## Linux x64 (X11 preview)
 
-Extract the Linux archive and run `Install.sh` as your normal user, without sudo. This installs into your user account using the signed GitHub channel and adds the application menu entry. Launch the installed app from that entry to receive automatic updates.
+Extract the Linux archive and run `TitanViewer` directly for portable use, or run `Install.sh` as your normal user to add a user installation and application menu entry. Both modes check the signed GitHub update channel automatically at startup and periodically. No sudo is needed.
 
-Running the extracted `TitanViewer` directly remains portable and does not automatically install it. Packages managed by a Linux distribution must be updated through their package manager.
+Portable mode does not require account sign-in or desktop registration. Updates keep the same launcher path, preserve profiles and adjacent user files, and retain a rollback copy. Keep the portable folder in a writable location owned by your user. Packages managed by a Linux distribution must be updated through their package manager.
 
-The 0.39.5 Linux build was tested on Ubuntu 22.04 x64, including an actual installed 0.38.0 to 0.39.5 upgrade. Physical desktop and Wayland qualification remains separate. No public macOS or mobile store build is included here.
+Portable 0.39.5 and older copies need one download of 0.39.6 because those old copies lack the portable startup-update code. Managed Linux installations can update through their existing channel. The Linux build targets Ubuntu 22.04 x64 / X11; physical desktop and Wayland qualification remains separate. No public macOS or mobile store build is included here.
 
 ## Automatic updates
 
-Installed Linux and Windows clients check at startup and verify each update with their pinned publisher signature before applying it. Active remote sessions defer installation. Offline clients can update after reconnecting.
+Installed and portable Linux and Windows clients check at startup and verify each update with their pinned publisher signature before applying it. Active remote sessions defer installation. Offline clients can update after reconnecting.
 
 The **Publish verified update channels** GitHub Action validates signed release metadata and payloads, then publishes the channels automatically. It refuses incomplete, altered, expired or downgraded releases. The private signing key stays off GitHub.
 
