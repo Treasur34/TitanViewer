@@ -17,12 +17,13 @@ import time
 import urllib.parse
 import urllib.request
 import zipfile
+import xml.etree.ElementTree as ET
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 REPOSITORY = "Treasur34/TitanViewer"
 PUBLIC_KEY = "3J56TbZFzEJxTj9oGn8mOWCFoayrvlob1D2RQB03gsM="
-PLATFORMS = ("windows-x64", "linux-x64", "linux-arm64")
+PLATFORMS = ("windows-x64", "linux-x86", "linux-x64", "linux-arm64", "macos-x64", "macos-arm64")
 MAX_ASSET = 768 * 1024 * 1024
 MAX_METADATA = 32768
 
@@ -66,13 +67,17 @@ def digest_fields(size, digest):
 
 
 def verify(document, platform, *, public=PUBLIC_KEY, now=None, allow_expired=False):
+    if platform not in PLATFORMS:
+        raise ValueError("Unsupported platform")
     now = int(time.time()) if now is None else now
     key = base64.b64decode(public, validate=True)
-    if platform.startswith("linux-"):
+    if platform.startswith(("linux-", "macos-")):
+        mac = platform.startswith("macos-")
+        system = "macos" if mac else "linux"
         if set(document) != {"release", "signature"}:
-            raise ValueError("Invalid Linux envelope")
+            raise ValueError("Invalid native envelope")
         value = document["release"]
-        if set(value) != {
+        fields = {
             "schema",
             "product",
             "platform",
@@ -82,14 +87,17 @@ def verify(document, platform, *, public=PUBLIC_KEY, now=None, allow_expired=Fal
             "sha256",
             "issued",
             "expires",
-        }:
-            raise ValueError("Invalid Linux manifest")
+        }
+        if mac:
+            fields.update({"archive_signature", "minimum_system"})
+        if set(value) != fields:
+            raise ValueError("Invalid native manifest")
         if (
             type(value["schema"]) is not int
             or value["schema"] != 1
             or value["product"] != "Titan Viewer"
-            or value["platform"] != "linux"
-            or "linux-" + value["arch"] != platform
+            or value["platform"] != system
+            or system + "-" + value["arch"] != platform
         ):
             raise ValueError("Linux target mismatch")
         if (
@@ -99,9 +107,18 @@ def verify(document, platform, *, public=PUBLIC_KEY, now=None, allow_expired=Fal
             or not value["issued"] < value["expires"] <= value["issued"] + 90 * 86400
         ):
             raise ValueError("Invalid Linux validity")
-        signature(key, document["signature"], b"Titan Viewer Linux release v1\0" + canonical(value))
+        domain = b"Titan Viewer macOS release v1\0" if mac else b"Titan Viewer Linux release v1\0"
+        signature(key, document["signature"], domain + canonical(value))
+        if mac:
+            archive_signature = base64.b64decode(value["archive_signature"], validate=True)
+            if (
+                len(archive_signature) != 64
+                or base64.b64encode(archive_signature).decode() != value["archive_signature"]
+                or value["minimum_system"] != "15.0"
+            ):
+                raise ValueError("Invalid Sparkle release")
         size, digest = value["size"], value["sha256"]
-        extension = ".tar.gz"
+        extension = ".zip" if mac else ".tar.gz"
     elif platform == "windows-x64":
         if set(document) != {"schema", "envelope", "bundle_size", "bundle_sha256"} or document["schema"] != 1:
             raise ValueError("Invalid Windows channel")
@@ -135,13 +152,20 @@ def verify(document, platform, *, public=PUBLIC_KEY, now=None, allow_expired=Fal
     }
 
 
-def verify_file(path, expected, document, platform):
+def verify_file(path, expected, document, platform, *, public=PUBLIC_KEY):
     if path.stat().st_size != expected["size"]:
         raise ValueError("Payload size differs from channel")
     with path.open("rb") as stream:
         if hashlib.file_digest(stream, "sha256").hexdigest() != expected["sha256"]:
             raise ValueError("Payload digest differs from channel")
-    if platform == "windows-x64":
+    if platform.startswith("macos-"):
+        # Sparkle authenticates the ZIP bytes separately from the CI envelope.
+        signature(
+            base64.b64decode(public, validate=True),
+            document["release"]["archive_signature"],
+            path.read_bytes(),
+        )
+    elif platform == "windows-x64":
         # The outer bundle digest is not signed; bind the executable and embedded
         # envelope to the verified signature as well. Never extract or execute it.
         with zipfile.ZipFile(path) as bundle:
@@ -224,7 +248,11 @@ def candidates(releases):
     for release in eligible:
         assets = assets_by_name(release)
         for platform in PLATFORMS:
-            suffix = ".rdupdate" if platform == "windows-x64" else ".tar.gz"
+            suffix = (
+                ".rdupdate"
+                if platform == "windows-x64"
+                else (".zip" if platform.startswith("macos-") else ".tar.gz")
+            )
             package = f"TitanViewer-{release['tag_name'][1:]}-{platform}{suffix}"
             metadata = platform + ".json"
             if platform not in selected and (metadata in assets or package in assets):
@@ -252,7 +280,7 @@ def plan(releases, current, directory, *, loader=download, public=PUBLIC_KEY, no
                     raise ValueError("Published release is immutable")
                 continue
         payload = loader(assets[expected["name"]], release["tag_name"], directory, limit=MAX_ASSET)
-        verify_file(payload, expected, document, platform)
+        verify_file(payload, expected, document, platform, public=public)
         changes[platform] = document
     return changes
 
@@ -283,6 +311,33 @@ def api(path, *, data=None, method=None):
         return unique_json(raw)
 
 
+def sparkle_xml(document):
+    value = document["release"]
+    namespace = "http://www.andymatuschak.org/xml-namespaces/sparkle"
+    ET.register_namespace("sparkle", namespace)
+    rss = ET.Element("rss", {"version": "2.0"})
+    channel = ET.SubElement(rss, "channel")
+    ET.SubElement(channel, "title").text = "Titan Viewer for macOS"
+    item = ET.SubElement(channel, "item")
+    ET.SubElement(item, "title").text = "Titan Viewer " + value["version"]
+    ET.SubElement(item, f"{{{namespace}}}version").text = value["version"]
+    ET.SubElement(item, f"{{{namespace}}}shortVersionString").text = value["version"]
+    ET.SubElement(item, f"{{{namespace}}}minimumSystemVersion").text = value["minimum_system"]
+    release = value["version"]
+    name = f"TitanViewer-{release}-macos-{value['arch']}.zip"
+    ET.SubElement(
+        item,
+        "enclosure",
+        {
+            "url": f"https://github.com/{REPOSITORY}/releases/download/v{release}/{name}",
+            "length": str(value["size"]),
+            "type": "application/octet-stream",
+            f"{{{namespace}}}edSignature": value["archive_signature"],
+        },
+    )
+    return ET.tostring(rss, encoding="utf-8", xml_declaration=True).decode()
+
+
 def publish(changes, head, tree):
     entries = []
     for platform, document in sorted(changes.items()):
@@ -294,6 +349,15 @@ def publish(changes, head, tree):
                 "content": canonical(document).decode() + "\n",
             }
         )
+        if platform.startswith("macos-"):
+            entries.append(
+                {
+                    "path": "channels/stable/" + platform + ".xml",
+                    "mode": "100644",
+                    "type": "blob",
+                    "content": sparkle_xml(document),
+                }
+            )
     new_tree = api("/git/trees", data={"base_tree": tree, "tree": entries})
     commit = api(
         "/git/commits",
