@@ -23,7 +23,15 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 REPOSITORY = "Treasur34/TitanViewer"
 PUBLIC_KEY = "3J56TbZFzEJxTj9oGn8mOWCFoayrvlob1D2RQB03gsM="
-PLATFORMS = ("windows-x64", "linux-x86", "linux-x64", "linux-arm64", "macos-x64", "macos-arm64")
+PLATFORMS = (
+    "windows-x86",
+    "windows-x64",
+    "linux-x86",
+    "linux-x64",
+    "linux-arm64",
+    "macos-x64",
+    "macos-arm64",
+)
 MAX_ASSET = 768 * 1024 * 1024
 MAX_METADATA = 32768
 
@@ -120,7 +128,7 @@ def verify(document, platform, *, public=PUBLIC_KEY, now=None, allow_expired=Fal
                 raise ValueError("Invalid Sparkle release")
         size, digest = value["size"], value["sha256"]
         extension = ".zip" if mac else ".tar.gz"
-    elif platform == "windows-x64":
+    elif platform in {"windows-x86", "windows-x64"}:
         if set(document) != {"schema", "envelope", "bundle_size", "bundle_sha256"} or document["schema"] != 1:
             raise ValueError("Invalid Windows channel")
         envelope = document["envelope"]
@@ -166,7 +174,7 @@ def verify_file(path, expected, document, platform, *, public=PUBLIC_KEY):
             document["release"]["archive_signature"],
             path.read_bytes(),
         )
-    elif platform == "windows-x64":
+    elif platform in {"windows-x86", "windows-x64"}:
         # The outer bundle digest is not signed; bind the executable and embedded
         # envelope to the verified signature as well. Never extract or execute it.
         with zipfile.ZipFile(path) as bundle:
@@ -251,7 +259,7 @@ def candidates(releases):
         for platform in PLATFORMS:
             suffix = (
                 ".rdupdate"
-                if platform == "windows-x64"
+                if platform in {"windows-x86", "windows-x64"}
                 else (".zip" if platform.startswith("macos-") else ".tar.gz")
             )
             package = f"TitanViewer-{release['tag_name'][1:]}-{platform}{suffix}"
