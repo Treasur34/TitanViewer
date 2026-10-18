@@ -4,17 +4,29 @@
 
 The download page chooses the newest published package for your operating system. Binary files are delivered by GitHub Releases.
 
-## Windows
+## Windows x64
 
 One EXE. Choose **Install** or **Continue portable** when it opens. The signed `.rdupdate` attachment is used by the application; you do not need to download it separately.
 
-## Linux x64 (X11 preview)
+## Linux (X11 previews)
 
 Extract the Linux archive and run `TitanViewer` directly for portable use, or run `Install.sh` as your normal user to add a user installation and application menu entry. Both modes check the signed GitHub update channel automatically at startup and periodically. No sudo is needed.
 
 Portable mode does not require account sign-in or desktop registration. Updates keep the same launcher path, preserve profiles and adjacent user files, and retain a rollback copy. Keep the portable folder in a writable location owned by your user. Packages managed by a Linux distribution must be updated through their package manager.
 
-Portable 0.39.5 and older copies need one download of 0.39.6 because those old copies lack the portable startup-update code. Managed Linux installations can update through their existing channel. The Linux build targets Ubuntu 22.04 x64 / X11; physical desktop and Wayland qualification remains separate. No public macOS or mobile store build is included here.
+Choose the archive matching your processor and system libraries:
+
+- **x64:** Ubuntu 22.04 or newer, glibc 2.35 or newer.
+- **32-bit x86:** Debian 13, glibc 2.41 or newer.
+- **ARM64:** Ubuntu 24.04 or newer, glibc 2.39 or newer; compatible 64-bit Raspberry Pi systems using X11.
+
+Portable 0.39.5 and older copies need one manual download because those old copies lack the portable startup-update code. Managed Linux installations can update through their existing channel. Physical desktop qualification remains separate. Wayland hosting and ARM32 are not included.
+
+## macOS previews
+
+Separate **Intel** and **Apple Silicon** archives require macOS 15 or newer. Extract the ZIP and move Titan Viewer.app to Applications. These builds have an ad-hoc signature and are **not notarized by Apple**; Gatekeeper may block first launch. Screen Recording and Accessibility permissions are required for hosting and control. Sparkle checks for Ed25519-signed updates. These previews have passed native CI and bundled health checks; physical desktop permission and upgrade acceptance testing remains outstanding.
+
+Windows 32-bit full host and mobile store builds are not included in this release.
 
 ## Automatic updates
 
