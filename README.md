@@ -4,9 +4,9 @@
 
 The download page chooses the newest published package for your operating system. Binary files are delivered by GitHub Releases.
 
-## Windows x64
+## Windows (32-bit x86 and x64)
 
-One EXE. Choose **Install** or **Continue portable** when it opens. The signed `.rdupdate` attachment is used by the application; you do not need to download it separately.
+Windows 10 version 1809 or newer. Both architectures include the complete host and viewer. The download page selects the matching architecture. One EXE. Choose **Install** or **Continue portable** when it opens. The signed `.rdupdate` attachment is used by the application; you do not need to download it separately.
 
 ## Linux (X11 previews)
 
@@ -26,7 +26,7 @@ Portable 0.39.5 and older copies need one manual download because those old copi
 
 Separate **Intel** and **Apple Silicon** archives require macOS 15 or newer. Extract the ZIP and move Titan Viewer.app to Applications. These builds have an ad-hoc signature and are **not notarized by Apple**; Gatekeeper may block first launch. Screen Recording and Accessibility permissions are required for hosting and control. Sparkle checks for Ed25519-signed updates. These previews have passed native CI and bundled health checks; physical desktop permission and upgrade acceptance testing remains outstanding.
 
-Windows 32-bit full host and mobile store builds are not included in this release.
+Mobile store builds are not included in this desktop release.
 
 ## Automatic updates
 
