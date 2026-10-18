@@ -89,7 +89,7 @@ def verify(document, platform, *, public=PUBLIC_KEY, now=None, allow_expired=Fal
             "expires",
         }
         if mac:
-            fields.update({"archive_signature", "minimum_system"})
+            fields.update({"archive_signature", "minimum_system", "distribution"})
         if set(value) != fields:
             raise ValueError("Invalid native manifest")
         if (
@@ -115,6 +115,7 @@ def verify(document, platform, *, public=PUBLIC_KEY, now=None, allow_expired=Fal
                 len(archive_signature) != 64
                 or base64.b64encode(archive_signature).decode() != value["archive_signature"]
                 or value["minimum_system"] != "15.0"
+                or value["distribution"] not in {"notarized", "adhoc-preview"}
             ):
                 raise ValueError("Invalid Sparkle release")
         size, digest = value["size"], value["sha256"]
@@ -320,6 +321,11 @@ def sparkle_xml(document):
     ET.SubElement(channel, "title").text = "Titan Viewer for macOS"
     item = ET.SubElement(channel, "item")
     ET.SubElement(item, "title").text = "Titan Viewer " + value["version"]
+    ET.SubElement(item, "description").text = (
+        "macOS preview. Not notarized by Apple."
+        if value["distribution"] == "adhoc-preview"
+        else "Apple-notarized macOS release."
+    )
     ET.SubElement(item, f"{{{namespace}}}version").text = value["version"]
     ET.SubElement(item, f"{{{namespace}}}shortVersionString").text = value["version"]
     ET.SubElement(item, f"{{{namespace}}}minimumSystemVersion").text = value["minimum_system"]
