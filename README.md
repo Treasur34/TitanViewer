@@ -6,7 +6,7 @@ The download page chooses the newest published package for your operating system
 
 ## Windows (32-bit x86 and x64)
 
-Windows 10 version 1809 or newer. Both architectures include the complete host and viewer. The download page selects the matching architecture. One EXE. Choose **Install** or **Continue portable** when it opens. The signed `.rdupdate` attachment is used by the application; you do not need to download it separately.
+Windows 10 version 1809 or newer. Both architectures include the complete host and viewer. The download page selects the matching architecture. One TitanViewer EXE. Choose **Install** or **Continue portable** when it opens. From 0.41.9, the EXE has a timestamped Authenticode signature supplied by Bamboo Trust. The signed `.rdupdate` attachment is used by the application; you do not need to download it separately.
 
 ## Linux (X11 previews)
 
@@ -24,7 +24,7 @@ Portable 0.39.5 and older copies need one manual download because those old copi
 
 ## macOS previews
 
-Separate **Intel** and **Apple Silicon** archives require macOS 15 or newer. Extract the ZIP and move Titan Viewer.app to Applications. These builds have an ad-hoc signature and are **not notarized by Apple**; Gatekeeper may block first launch. Screen Recording and Accessibility permissions are required for hosting and control. Sparkle checks for Ed25519-signed updates. These previews have passed native CI and bundled health checks; physical desktop permission and upgrade acceptance testing remains outstanding.
+Separate **Intel** and **Apple Silicon** archives require macOS 15 or newer. Extract the ZIP and move Titan Viewer.app to Applications. From 0.41.9, the apps are signed with the Titan Viewer owner's Apple Developer ID and notarized by Apple. Screen Recording and Accessibility permissions are required for hosting and control. Sparkle checks for Ed25519-signed updates. Native CI verifies packaged startup and the shipped updater's installation and relaunch using an isolated test application. Physical desktop permission testing remains separate.
 
 Mobile store builds are not included in this desktop release.
 
@@ -40,4 +40,4 @@ Arabic, English, Turkish, German, Spanish, French, Italian, Portuguese, Russian,
 
 This repository contains release binaries, signed metadata, notices and the public channel verifier. Application source, private signing keys and server configuration are not included. GitHub's automatic source archives contain only these public distribution files.
 
-These are preview builds. The Windows EXE does not yet carry an Authenticode certificate; the update channel uses a separate publisher signature. License terms apply.
+These are preview builds. Operating-system code signatures and the update channel's publisher signature are independently verified. Code signing does not guarantee that all browser reputation warnings disappear. License terms apply.
